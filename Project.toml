@@ -1,0 +1,16 @@
+name = "TreeViewWidget"
+uuid = "f0b0d551-e269-4cb7-becc-9ac892c06888"
+authors = ["matcox <matthijs.cox@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+
+[compat]
+julia = "1.0"
+
+[extras]
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test", "Pkg"]
