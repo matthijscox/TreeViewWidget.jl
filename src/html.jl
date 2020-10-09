@@ -12,12 +12,31 @@ selected_css = """
 
 single_select_js = js"""
 function() {
-  let selected = document.getElementsByClassName("selectable");
-  for(let elem of selected) {
+  let selected_list = []
+  if (event.ctrlKey) {
+    if (this.classList.contains($SELECTED_CLASS)) {
+      // unselect this element
+      this.classList.remove($SELECTED_CLASS);
+    } else {
+      // select this element
+      this.classList.add($SELECTED_CLASS);
+    }
+    // loop over all selected elements
+    let selected = document.getElementsByClassName($SELECTED_CLASS);
+    for (let elem of selected) {
+      selected_list.push({'label':elem.innerText, 'id':elem.id})
+    }
+  } else {
+    // first make sure all selectable elements are not selected
+    let selected = document.getElementsByClassName("selectable");
+    for(let elem of selected) {
       elem.classList.remove($SELECTED_CLASS);
+    }
+    // only select this element
+    this.classList.add($SELECTED_CLASS);
+    selected_list.push({'label':this.innerText, 'id':this.id})
   }
-  this.classList.add($SELECTED_CLASS);
-  _webIOScope.setObservableValue('selected_node', {'text':this.innerText, 'id':this.id});
+  _webIOScope.setObservableValue('selected_node', selected_list);
 }
 """
 selected_style = node(:style, selected_css)

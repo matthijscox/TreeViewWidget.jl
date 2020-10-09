@@ -104,7 +104,7 @@ To get the Observable selection of elements:
 """
 function TreeView(content::TreeViewRoot)
     treeview_scope = create_scope(tohtml(content))
-    obs = Observable(treeview_scope, SELECTION_OBSERVABLE_NAME, Dict{String, String}())
+    obs = Observable(treeview_scope, SELECTION_OBSERVABLE_NAME, Dict{String, String}[])
     return TreeView(content, obs, treeview_scope)
 end
 
