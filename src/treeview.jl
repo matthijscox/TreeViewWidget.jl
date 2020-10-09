@@ -112,6 +112,8 @@ end
 Base.getindex(tv::TreeView) = tv.selection
 
 Base.show(io::IO, x::TreeView) = show(io, x.scope)
-Base.show(io::IO, m::MIME"text/html", x::TreeView) = show(io, m, x.scope)
-#Base.display(w::TreeView) = display(render(w))
+
+# just forward all MIME to WebIO.Scope
+Base.show(io::IO, m::MIME, x::TreeView) = show(io, m, x.scope)
+
 
