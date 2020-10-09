@@ -1,6 +1,3 @@
-const SELECTED_CLASS = "selected2" # note: should not be "selected", because Jupyter already uses that
-const SELECTION_OBSERVABLE_NAME = "selected_node"
-
 selected_css = """
 .$SELECTED_CLASS {
   background: rgb(0, 209, 178);

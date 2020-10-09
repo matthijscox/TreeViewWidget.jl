@@ -21,15 +21,15 @@ end
 Base.push!(parent::TreeViewNode, child::TreeViewNode) = push!(children(parent), child)
     
 """
-    TreeView(::String)
+TreeViewRoot(::String)
 
-Create a TreeView for use as content of a TreeViewWidget
+Create a TreeViewRoot for use as content in a TreeView widget
 
 # Examples
 
-Create a TreeView
+Create a TreeViewRoot
 ```
-    tree = TreeView()
+    tree = TreeViewRoot()
     beverages = TreeViewNode("Beverages")
     push!(tree, beverages)
     push!(tree, TreeViewNode("Food"))
@@ -78,9 +78,40 @@ struct TreeView
     selection::Observable
     scope::Scope
 end
+
+"""
+TreeView(::TreeViewRoot)
+
+Create a TreeView widget from a TreeViewRoot structure
+
+# Examples
+
+Create a TreeView
+```
+    tree = TreeViewRoot()
+    beverages = TreeViewNode("Beverages")
+    push!(beverages, TreeViewNode("Water"))
+    push!(beverages, TreeViewNode("Tea"))
+    push!(tree, beverages)
+    push!(tree, TreeViewNode("Food"))
+
+    treeview = TreeView(tree)
+```
+To get the Observable selection of elements:
+```
+    treeview[]
+```
+"""
 function TreeView(content::TreeViewRoot)
-    treeview_html = node(:p, "I'm a tree!")
-    treeview_scope = create_scope(treeview_html)
+    treeview_scope = create_scope(tohtml(content))
     obs = Observable(treeview_scope, SELECTION_OBSERVABLE_NAME, Dict{String, String}())
+    return TreeView(content, obs, treeview_scope)
 end
+
+# standard behavior of widgets: get the observable via the getindex: treeview[]
+Base.getindex(tv::TreeView) = tv.selection
+
+Base.show(io::IO, x::TreeView) = show(io, x.scope)
+Base.show(io::IO, m::MIME"text/html", x::TreeView) = show(io, m, x.scope)
+#Base.display(w::TreeView) = display(render(w))
 

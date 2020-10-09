@@ -41,6 +41,21 @@ using WebIO
         end
     end
 
+    function test_example_root_html(root::TreeViewWidget.TreeViewRoot, html::Node)
+        # <ul>
+        #   <li>...beverages with children... coffee with children...</li>
+        #   <li>...meat with children...</li>
+        #   <li>...vegetables...</li>
+        # </ul>
+        @test html isa Node
+        @test html.instanceof.tag == :ul
+        @test length(html.children) == 3
+        @test html.children[1].instanceof.tag == :li
+        test_nested_node_html(root.nodes[1], html.children[1])
+        test_nested_node_html(root.nodes[2], html.children[2])
+        test_node_html(root.nodes[3], html.children[3])
+    end
+
     @testset "TreeViewNode" begin
         tree_node = TreeViewNode("foo")
         @test tree_node.label == "foo"
@@ -96,24 +111,17 @@ using WebIO
 
     @testset "TreeviewRootToHTML" begin
         root = TreeViewWidget.example_treeview_root()
-        # <ul>
-        #   <li>...beverages with children... coffee with children...</li>
-        #   <li>...meat with children...</li>
-        #   <li>...vegetables...</li>
-        # </ul>
         html = TreeViewWidget.tohtml(root)
-        @test html isa Node
-        @test html.instanceof.tag == :ul
-        @test length(html.children) == 3
-        @test html.children[1].instanceof.tag == :li
-
-        test_nested_node_html(root.nodes[1], html.children[1])
-        test_nested_node_html(root.nodes[2], html.children[2])
-        test_node_html(root.nodes[3], html.children[3])
+        test_example_root_html(root, html)
     end
 
     @testset "TreeView" begin
-        treeview = TreeView(TreeViewWidget.example_treeview_root())
+        example_root = TreeViewWidget.example_treeview_root()
+        treeview = TreeView(example_root)
+        test_example_root_html(example_root, treeview.scope.dom.children[end])
+
+        # Observerable behavior as used in Interact.jl etc
+        @test treeview[] == treeview.selection
     end
 
 end

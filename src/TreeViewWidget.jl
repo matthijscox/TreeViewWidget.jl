@@ -5,6 +5,12 @@ module TreeViewWidget
 
     export TreeViewNode, TreeViewRoot, TreeView
 
+    # note: should not be "selected", because Jupyter already uses that
+    const SELECTED_CLASS = "selected2" 
+
+    # used by single_select_js, and by TreeView observable constructor
+    const SELECTION_OBSERVABLE_NAME = "selected_node"
+
     include("treeview.jl")
     include("html.jl")
 end
