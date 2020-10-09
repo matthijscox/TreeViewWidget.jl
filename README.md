@@ -22,7 +22,7 @@ Create a treeview widget from a treeview structure
 ```
 
 The elements with children are shown as collapsed nested structures. You can expand them by clicking on the `>` icon.
-The text of each element can be selected. Use CTRL+Click to select multiple elements
+The text of each element can be selected. Use CTRL+Click to select multiple elements.
 
 ![example_treeview](figures/example_treeview.png)
 
