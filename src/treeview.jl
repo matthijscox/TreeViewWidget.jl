@@ -1,9 +1,10 @@
 
 abstract type AbstractTreeViewNode end
-struct TreeViewNode <: AbstractTreeViewNode
-    id::String
-    label::String
-    children::Vector{TreeViewNode}
+@Base.kwdef struct TreeViewNode <: AbstractTreeViewNode
+    id::String = string(UUIDs.uuid4())
+    label::String = "nothing"
+    children::Vector{TreeViewNode} = TreeViewNode[]
+    data = nothing # insert arbitrary data here
 end
 label(t::TreeViewNode) = t.label
 tree_id(t::TreeViewNode) = t.id
@@ -15,7 +16,7 @@ children(t::TreeViewNode) = t.children
 Create a TreeViewNode
 """
 function TreeViewNode(text::String) 
-    TreeViewNode(string(UUIDs.uuid4()), text, TreeViewNode[])
+    TreeViewNode(string(UUIDs.uuid4()), text, TreeViewNode[], nothing)
 end
 
 Base.push!(parent::TreeViewNode, child::TreeViewNode) = push!(children(parent), child)
@@ -115,5 +116,3 @@ Base.show(io::IO, x::TreeView) = show(io, x.scope)
 
 # just forward all MIME to WebIO.Scope
 Base.show(io::IO, m::MIME, x::TreeView) = show(io, m, x.scope)
-
-

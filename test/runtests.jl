@@ -124,4 +124,37 @@ using WebIO
         @test treeview[] == treeview.selection
     end
 
+    @testset "NodeIterator" begin
+        x = TreeViewNode("x")
+        @test collect(eachnode(x)) == [x]
+
+        x2 = TreeViewNode("x2"); push!(x, x2)
+        x3 = TreeViewNode("x3"); push!(x, x3)
+        @test collect(eachnode(x)) == [x, x2, x3]
+
+        x4 = TreeViewNode("x4"); push!(x2, x4)
+        x5 = TreeViewNode("x5"); push!(x3, x5)
+        @test collect(eachnode(x)) == [x, x2, x4, x3, x5]
+
+        tree = TreeViewRoot([x])
+        @test collect(eachnode(tree)) == [x, x2, x4, x3, x5]
+
+        treeview = TreeView(tree)
+        @test collect(eachnode(treeview)) == [x, x2, x4, x3, x5]
+    end
+
+    @testset "FindById" begin
+        tree = TreeViewWidget.example_treeview_root()
+        espresso_node = tree.nodes[1].children[3].children[1]
+        @test TreeViewWidget.find_by_id(tree, espresso_node.id) == espresso_node
+        @test tree[espresso_node.id] == espresso_node
+
+        treeview = TreeView(tree)
+        @test treeview[espresso_node.id] == espresso_node
+
+        d = Dict{String, String}()
+        d["id"] = espresso_node.id
+        @test treeview[d] == espresso_node
+    end
+
 end

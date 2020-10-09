@@ -3,7 +3,7 @@ module TreeViewWidget
     using UUIDs
     using Observables
 
-    export TreeViewNode, TreeViewRoot, TreeView
+    export TreeViewNode, TreeViewRoot, TreeView, eachnode
 
     # note: should not be "selected", because Jupyter already uses that
     const SELECTED_CLASS = "selected2" 
@@ -13,4 +13,5 @@ module TreeViewWidget
 
     include("treeview.jl")
     include("html.jl")
+    include("nodeIterator.jl")
 end
