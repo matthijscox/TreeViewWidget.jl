@@ -9,7 +9,7 @@ A minimal TreeView widget for use in Jupyter notebooks (and maybe Blink)
 
 ## Example
 
-Create a treeview widget from a treeview structure
+Create a treeview widget from a treeview structure:
 ```
     tree = TreeViewRoot()
     beverages = TreeViewNode("Beverages")
