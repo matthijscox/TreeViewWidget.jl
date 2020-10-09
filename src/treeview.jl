@@ -51,15 +51,25 @@ Base.push!(tree::TreeViewRoot, node::TreeViewNode) = push!(tree.nodes, node)
 
 function example_treeview_root()
     tree = TreeViewRoot()
+
     beverages = TreeViewNode("Beverages")
     push!(tree, beverages)
     push!(beverages, TreeViewNode("Water"))
     push!(beverages, TreeViewNode("Tea"))
-    push!(beverages, TreeViewNode("Coffee"))
-    food = TreeViewNode("Food")
-    push!(tree, food)
-    push!(food, TreeViewNode("Vegetable"))
-    push!(food, TreeViewNode("Meat"))
+
+    coffee = TreeViewNode("Coffee")
+    push!(beverages, coffee)
+    push!(coffee, TreeViewNode("Espresso"))
+    push!(coffee, TreeViewNode("Cappuccino"))
+
+    meat = TreeViewNode("Meat")
+    push!(tree, meat)
+    push!(meat, TreeViewNode("Chicken"))
+    push!(meat, TreeViewNode("Steak"))
+    
+    vegetables = TreeViewNode("Vegetables")
+    push!(tree, vegetables)
+
     return tree
 end
 

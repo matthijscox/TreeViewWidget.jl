@@ -83,6 +83,10 @@ function selectable_text_node(text::String, id::String = string(UUIDs.uuid4()))
             )
 end
 
+function selectable_text_node(node::AbstractTreeViewNode)
+  return selectable_text_node(label(node), tree_id(node))
+end
+
 function selectable_list_element(text::String, id::String = string(UUIDs.uuid4()))
     return dom"""li[style=$("cursor:auto")]"""(selectable_text_node(text, id))
 end
@@ -109,11 +113,11 @@ function selectable_list_element_with_list(text::String, list)
     return dom"""li[style=$("cursor:auto")]"""(caret_element(), selectable_text_node(text), list)
 end
 
-function selectable_list_element_with_list(node::AbstractTreeViewNode)
+function selectable_list_element_with_list(node::AbstractTreeViewNode, list)
   return dom"""li[style=$("cursor:auto")]"""(
     caret_element(), 
-    selectable_list_element(node), 
-    nested_selectable_list(children(node)),
+    selectable_text_node(node), 
+    list,
     )
 end
 
@@ -125,6 +129,13 @@ function tohtml(node::AbstractTreeViewNode)
     if isempty(children(node))
         return selectable_list_element(node)
     else
-        return selectable_list_element_with_list(node)
+        return selectable_list_element_with_list(node, nested_list(tohtml.(children(node))))
     end
+end
+
+function tohtml(root::TreeViewRoot)
+  if isempty(root.nodes)
+      error("Empty TreeView")
+  end
+  return a_list(tohtml.(root.nodes))
 end

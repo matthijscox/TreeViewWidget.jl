@@ -5,12 +5,40 @@ using WebIO
 
 @testset "TreeViewWidget.jl" begin
 
+    function test_text_node_html(tree_node::TreeViewWidget.AbstractTreeViewNode, html::Node)
+        # <span id=tree_node.id>tree_node.label</span>
+        @test html.instanceof.tag == :span
+        @test html.props[:id] == tree_node.id
+        @test html.children[1] == tree_node.label
+    end
+
     function test_node_html(tree_node::TreeViewWidget.AbstractTreeViewNode, html::Node)
         # <li>
         #   <span id=tree_node.id>tree_node.label</span>
         # </li>
-        @test html.children[1].props[:id] == tree_node.id
-        @test html.children[1].children[1] == tree_node.label
+        @test html.instanceof.tag == :li
+        test_text_node_html(tree_node, html.children[1])
+    end
+
+    function test_nested_node_html(tree_node::TreeViewWidget.AbstractTreeViewNode, html::Node)
+        # <li>
+        #   <span class="caret-start"></span>
+        #   <span id=tree_id>label</span>
+        #   <ul class="nested">children</ul>
+        # </li>
+        @test html.instanceof.tag == :li
+        @test length(html.children) == 3
+        test_text_node_html(tree_node, html.children[2])
+        nested_list = html.children[3].children
+        tree_node_children = tree_node.children
+        @test length(nested_list) == length(tree_node_children)
+        for (child_node, html_element) in zip(tree_node_children, nested_list)
+            if isempty(child_node.children)
+                test_node_html(child_node, html_element)
+            else
+                test_nested_node_html(child_node, html_element)
+            end
+        end
     end
 
     @testset "TreeViewNode" begin
@@ -46,22 +74,45 @@ using WebIO
 
         html = TreeViewWidget.tohtml(tree_node)
         @test html isa Node
-        @test length(html.children) == 3
-
-        # <li>
-        #   <span class="caret-start"></span>
-        #   <span id=tree_id>label</span>
-        #   <ul class="nested">children</ul>
-        # </li>
-        test_node_html(tree_node, html.children[2])
-        nested_list = html.children[3].children
-        @test length(nested_list) == nr_tree_children
-        for n=1:nr_tree_children
-            test_node_html(tree_node.children[n], nested_list[n])
-        end
+        test_nested_node_html(tree_node, html)
     end
 
-    @testset "TreeviewToHTML" begin
+    @testset "DoubleNestedNodeToHTML" begin
+        tree_node = TreeViewNode("parent_node")
+        push!(tree_node, TreeViewNode("child1"))
+        child2 = TreeViewNode("child2")
+        push!(tree_node, child2)
+        push!(child2, TreeViewNode("grandchild1"))
+        push!(child2, TreeViewNode("grandchild2"))
+        nr_tree_children = length(tree_node.children)
+
+        html = TreeViewWidget.tohtml(tree_node)
+        @test html isa Node
+        test_nested_node_html(tree_node, html)
+
+        # explicitly test the 2nd level again to be sure, recursiveness can be difficult
+        test_nested_node_html(tree_node.children[2], html.children[3].children[2])
+    end
+
+    @testset "TreeviewRootToHTML" begin
+        root = TreeViewWidget.example_treeview_root()
+        # <ul>
+        #   <li>...beverages with children... coffee with children...</li>
+        #   <li>...meat with children...</li>
+        #   <li>...vegetables...</li>
+        # </ul>
+        html = TreeViewWidget.tohtml(root)
+        @test html isa Node
+        @test html.instanceof.tag == :ul
+        @test length(html.children) == 3
+        @test html.children[1].instanceof.tag == :li
+
+        test_nested_node_html(root.nodes[1], html.children[1])
+        test_nested_node_html(root.nodes[2], html.children[2])
+        test_node_html(root.nodes[3], html.children[3])
+    end
+
+    @testset "TreeView" begin
         treeview = TreeView(TreeViewWidget.example_treeview_root())
     end
 
