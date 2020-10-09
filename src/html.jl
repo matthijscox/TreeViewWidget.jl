@@ -87,8 +87,12 @@ function selectable_list_element(text::String, id::String = string(UUIDs.uuid4()
     return dom"""li[style=$("cursor:auto")]"""(selectable_text_node(text, id))
 end
 
-function nested_selectable_list(text_array::Vector{<:AbstractString})
-    list_elements = [selectable_list_element(text) for text in text_array]
+function selectable_list_element(node::AbstractTreeViewNode)
+    return selectable_list_element(label(node), tree_id(node))
+end
+
+function nested_selectable_list(an_array::Array)
+    list_elements = [selectable_list_element(elt) for elt in an_array]
     return nested_list(list_elements)
 end
 
@@ -101,14 +105,26 @@ function a_list(list_elements::Array{<:Node})
     return dom"""ul[style=$("list-style-type:none")]"""(list_elements...)
 end
 
-function selectable_element_with_list(text::String, list)
+function selectable_list_element_with_list(text::String, list)
     return dom"""li[style=$("cursor:auto")]"""(caret_element(), selectable_text_node(text), list)
+end
+
+function selectable_list_element_with_list(node::AbstractTreeViewNode)
+  return dom"""li[style=$("cursor:auto")]"""(
+    caret_element(), 
+    selectable_list_element(node), 
+    nested_selectable_list(children(node)),
+    )
 end
 
 function create_scope(treeview::Node)
     return Scope(dom = Node(:div, nested_style, selected_style, treeview))
 end
 
-function tohtml(node::TreeViewNode)
-    return selectable_list_element(node.text, node.id)
+function tohtml(node::AbstractTreeViewNode)
+    if isempty(children(node))
+        return selectable_list_element(node)
+    else
+        return selectable_list_element_with_list(node)
+    end
 end

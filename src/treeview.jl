@@ -1,10 +1,13 @@
 
-
-struct TreeViewNode
+abstract type AbstractTreeViewNode end
+struct TreeViewNode <: AbstractTreeViewNode
     id::String
-    text::String
+    label::String
     children::Vector{TreeViewNode}
 end
+label(t::TreeViewNode) = t.label
+tree_id(t::TreeViewNode) = t.id
+children(t::TreeViewNode) = t.children
 
 """
     TreeViewNode(::String)
@@ -14,7 +17,6 @@ Create a TreeViewNode
 function TreeViewNode(text::String) 
     TreeViewNode(string(UUIDs.uuid4()), text, TreeViewNode[])
 end
-children(node::TreeViewNode) = node.children
 
 Base.push!(parent::TreeViewNode, child::TreeViewNode) = push!(children(parent), child)
     
@@ -41,7 +43,7 @@ And push some children into a node if you want
 
 """
 struct TreeViewRoot
-    nodes::AbstractArray{TreeViewNode}
+    nodes::AbstractArray{<:AbstractTreeViewNode}
 end
 TreeViewRoot() = TreeViewRoot(TreeViewNode[])
 
