@@ -80,7 +80,7 @@ function nested_list(list_elements::Array{<:Node})
     return dom"""ul.nested[style=$("list-style-type:none")]"""(list_elements...)
 end
 
-caret_element() = dom"""span.caret-start"""(dom"b"(">"), events=Dict("click" => toggle_nested_js))
+expand_button() = dom"""span.caret-start"""(dom"b"(">"), events=Dict("click" => toggle_nested_js))
 
 function selectable_text_node(text::String, id::String = string(UUIDs.uuid4()))
     return node(
@@ -119,12 +119,12 @@ function a_list(list_elements::Array{<:Node})
 end
 
 function selectable_list_element_with_list(text::String, list)
-    return dom"""li[style=$("cursor:auto")]"""(caret_element(), selectable_text_node(text), list)
+    return dom"""li[style=$("cursor:auto")]"""(expand_button(), selectable_text_node(text), list)
 end
 
 function selectable_list_element_with_list(node::AbstractTreeViewNode, list)
   return dom"""li[style=$("cursor:auto")]"""(
-    caret_element(), 
+    expand_button(), 
     selectable_text_node(node), 
     list,
     )
